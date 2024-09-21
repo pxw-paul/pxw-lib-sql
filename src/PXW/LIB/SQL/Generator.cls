@@ -15,6 +15,7 @@ ClassMethod GenerateEventStart(QueryId As %String) As %Status
 {
 	;$$$GENERATE($CHAR(9)_"s log=##class(PXW.LIB.SQLQuery.Log).%New("""_QueryId_""",.%args,.tLines)")
 	;$$$GENERATE($CHAR(9)_"s sc=log.%Save() Throw:$$$ISERR(sc) ##class(%Exception.StatusException).ThrowIfInterrupt(sc)")
+	Quit $$$OK
 }
 
 ClassMethod GenerateEventFinish() As %Status
