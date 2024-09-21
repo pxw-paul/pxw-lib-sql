@@ -7,8 +7,8 @@
       <Description>Basic InterSystems IRIS Development Template</Description>
       <Packaging>module</Packaging>
       <SourcesRoot>src</SourcesRoot>
-      <Resource Name="dc.sample.PKG"/>
-      <UnitTest Name="/tests" Package="dc.sample.unittests" Phase="test"/>
+      <Resource Name="PXW.PKG"/>
+     
 
     </Module>
   </Document>
