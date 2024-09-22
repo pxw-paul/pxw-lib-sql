@@ -114,9 +114,6 @@ A5668   9747    Tesla,Norbert A.        96      440-75-2962
 L1050   6520    Tesla,Patricia S.       98      141-80-1777
 
 6 Rows(s) Affected
-statement prepare time(s)/globals/cmds/disk: 0.0002s/4/101/0ms
-          execute time(s)/globals/cmds/disk: 0.0020s/51/6,206/0ms
-                                query class: %sqlcq.IRISAPP.cls17, %Library.ProcedureContext
 ---------------------------------------------------------------------------
 ```
 ```
@@ -151,7 +148,7 @@ This is that class that replaces %Library.SQLQuery on Queries.
 This class is used by PXW.LIB.SQL.Query when generating the code
 
 ### PXW.LIB.SQL.Macros.INC
-This is something that may help when creating queries. The macros in here were and idea I had to make a complex query.
+This is something that may help when creating queries. The macros in here were an idea I had to make a complex query.
 
 ### PXW.sample package
 The directory PXW/sample contains two txt files with the code for example classes. These are not cls files so they will not be install automatically.
