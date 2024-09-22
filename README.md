@@ -87,11 +87,11 @@ The part after the IF is counted as object script code and simply dumped into th
 
 The above example is trivial, and actually writing this as a pure SQL query you can create the same effect with the same index usage. If the logic was more complicated this starts to gain an advantage as it will only compile what is needed and is more likely to use the indices correctly - although query optimisation that happens in Iris is very good and produces some really neat plans.
 
-The repository contains two sample classes to demonstrate the functionality.
+The repository contains two sample classes to demonstrate the functionality, these are text files so are not loaded automatically. You can load them if you want to try the tests.
 
 You can populate the Person object by running
 ```
-IRISAPP>d ##class(PXW.LIB.SQL.sample.Person).Populate(10000)
+IRISAPP>d ##class(PXW.sample.Person).Populate(10000)
 ```
 You can test its working using SQL call or ObjectScript function.
 ```
@@ -103,8 +103,6 @@ The command prefix is currently set to: <<nothing>>.
 Enter <command>, 'q' to quit, '?' for help.
 [SQL]IRISAPP>>call PXW_sample.PersonQueries_FilterPXW('Tesla*',95)
 10.     call PXW_sample.PersonQueries_FilterPXW('Tesla*',95)
-
-
 
 Dumping result #1
 Q2      ID      Name    Age     SSN
@@ -136,7 +134,6 @@ L1050   6520    Tesla,Patricia S.       98      141-80-1777
 6 Rows(s) Affected
 ```
 
-
 ## Running unit tests
 
 There are no unit tests yet.
@@ -157,7 +154,8 @@ This class is used by PXW.LIB.SQL.Query when generating the code
 This is something that may help when creating queries. The macros in here were and idea I had to make a complex query.
 
 ### PXW.sample package
-This contains two classes, a small Person object that can be used for testing. A set of Queries showing different ways to create the same thing. I hope you will agree that the PXW way looks nicer.
+The directory PXW/sample contains two txt files with the code for example classes. These are not cls files so they will not be install automatically.
+The two classes are: a small Person object that can be used for testing. A set of Queries showing different ways to create the same results. I hope you will agree that the PXW way looks nicer.
 
 ## Known issues
 There is no check on the query to make sure the IF/ENDIF counts match. If there is something wrong it will most likely show a compile error on a seemingly random line of the INT code.
