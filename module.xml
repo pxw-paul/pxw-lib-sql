@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
-  <Document name="dc-sample.ZPM">
+  <Document name="pxw-lib-sql.ZPM">
     <Module>
-      <Name>dc-sample</Name>
+      <Name>pxw-lib-sql</Name>
       <Version>2.0.9</Version>
       <Description>Basic InterSystems IRIS Development Template</Description>
       <Packaging>module</Packaging>
       <SourcesRoot>src</SourcesRoot>
       <Resource Name="PXW.PKG"/>
-     
-
     </Module>
   </Document>
 </Export>
