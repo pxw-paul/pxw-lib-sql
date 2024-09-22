@@ -1,9 +1,9 @@
-Class PXW.LIB.SQL.sample.Person Extends (%Persistent, %Populate)
+Class PXW.sample.Person Extends (%Persistent, %Populate)
 {
 
 Property Name As %Name;
 
-Property Age As %Integer(MAXVAL = 120, MINVAL = 0);
+Property Age As %Integer(MAXVAL = 99, MINVAL = 0);
 
 Property SSN As %String;
 
@@ -41,11 +41,11 @@ Storage Default
 <Value>Q2</Value>
 </Value>
 </Data>
-<DataLocation>^PXW.LIB.SQL.sample.PersonD</DataLocation>
+<DataLocation>^PXW.sample.PersonD</DataLocation>
 <DefaultData>PersonDefaultData</DefaultData>
-<IdLocation>^PXW.LIB.SQL.sample.PersonD</IdLocation>
-<IndexLocation>^PXW.LIB.SQL.sample.PersonI</IndexLocation>
-<StreamLocation>^PXW.LIB.SQL.sample.PersonS</StreamLocation>
+<IdLocation>^PXW.sample.PersonD</IdLocation>
+<IndexLocation>^PXW.sample.PersonI</IndexLocation>
+<StreamLocation>^PXW.sample.PersonS</StreamLocation>
 <Type>%Storage.Persistent</Type>
 }
 

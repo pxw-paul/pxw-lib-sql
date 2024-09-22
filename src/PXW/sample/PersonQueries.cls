@@ -1,13 +1,13 @@
 Include PXW.LIB.SQL.Macros
 
-Class PXW.LIB.SQL.sample.Queries Extends %RegisteredObject
+Class PXW.sample.PersonQueries Extends %RegisteredObject
 {
 
 /// This method shows how a simple search might be implemented by creating an sql string using ObjectScript.
 ClassMethod SimpleFilterString(SearchName As %String = "", MinAge As %Integer = "") As %String
 {
     Set sep=""
-    Set sql="SELECT ID, Name, Age, SSN FROM %ALLINDEX PXW_LIB_SQL_sample.Person WHERE "
+    Set sql="SELECT ID, Name, Age, SSN FROM %ALLINDEX PXW_sample.Person WHERE "
     If SearchName'="" {
         Set sql=sql_"Name %STARTSWITH '"_SearchName_"'",sep=" AND "
     }
@@ -18,7 +18,7 @@ ClassMethod SimpleFilterString(SearchName As %String = "", MinAge As %Integer = 
 /// This query method shows how a simple search might be implemented using PXW.LIB.SQL.Query.
 Query SimpleFilterPXW(SearchName As %String = "", MinAge As %Integer = "") As PXW.LIB.SQL.Query [ SqlProc ]
 {
-SELECT ID, Name, Age, SSN FROM %ALLINDEX PXW_LIB_SQL_sample.Person 
+SELECT ID, Name, Age, SSN FROM %ALLINDEX PXW_sample.Person 
 WHERE 1=1
     --IF SearchName'=""
         AND Name %STARTSWITH :SearchName
@@ -32,7 +32,7 @@ WHERE 1=1
 ClassMethod FilterString(Name As %String = "", Age As %Integer = "", Order As %String = "NAME") As %String
 {
     Set sep=""
-    Set sql="SELECT ID, Name, Age, SSN FROM %ALLINDEX PXW_LIB_SQL_sample.Person WHERE "
+    Set sql="SELECT ID, Name, Age, SSN FROM %ALLINDEX PXW_sample.Person WHERE "
     If Name'="" {
         If Name["*" {
             Set sql=sql_"Name %STARTSWITH '"_$piece(Name,"*",1)_"'",sep=" AND "
@@ -55,7 +55,7 @@ ClassMethod FilterString(Name As %String = "", Age As %Integer = "", Order As %S
 /// Note that this query is returning Q1 in column 1 so that I can look for the generated cached query more easiy and distinguish it from queries generated in other ways.
 Query FilterSQL(Name As %String = "", Age As %Integer = "", Order As %String = "NAME") As %SQLQuery(CONTAINID = 1, SELECTMODE = "RUNTIME") [ SqlProc ]
 {
-SELECT Q1,ID, Name, Age, SSN FROM %ALLINDEX PXW_LIB_SQL_sample.Person 
+SELECT Q1,ID, Name, Age, SSN FROM %ALLINDEX PXW_sample.Person 
 WHERE 
     (:Name IS NULL 
         OR (:Name['*' 
@@ -79,7 +79,7 @@ ORDER BY (CASE WHEN :Order='NAME' THEN Name
 /// Note that this query is returning Q1 in column 1 so that I can look for the generated cached query more easiy and distinguish it from queries generated in other ways.
 Query FilterPXW(Name As %String = "", Age As %Integer = "", Order As %String = "NAME") As PXW.LIB.SQL.Query [ SqlProc ]
 {
-SELECT Q2,ID, Name, Age, SSN FROM %ALLINDEX PXW_LIB_SQL_sample.Person 
+SELECT Q2,ID, Name, Age, SSN FROM %ALLINDEX PXW_sample.Person 
 WHERE 1=1
     --IF Name'=""
         --IF Name["*"
@@ -103,7 +103,7 @@ WHERE 1=1
 
 Query FilterByOther(Filter As %String) As PXW.LIB.SQL.Query [ SqlProc ]
 {
-SELECT Q2,ID, Name, Age, SSN FROM %ALLINDEX PXW_LIB_SQL_sample.Person 
+SELECT Q2,ID, Name, Age, SSN FROM %ALLINDEX PXW_sample.Person 
 WHERE 1=1
     --IF $$$FIELD(Filter)="NAME"
         AND Name=$$$SQLVALUE(:Filter)
