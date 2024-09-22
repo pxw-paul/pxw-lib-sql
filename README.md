@@ -75,7 +75,7 @@ WHERE 1=1
 ```
 The SQL stands out more. 
 
-The "logic" parts of the sql to use are just comments, so the editor (Studio and VS Code) will ignore them. This means that the overall SQL must be valid or the editor may get confused. 
+The "logic" parts of the sql to use are comments, so the editor (Studio and VS Code) will ignore them. The overall SQL must be valid or the editor may get confused. 
 
 The IF,ELSEIF,ELSE,ENDIF commands must be immediately after the start of the comment.
 ```
