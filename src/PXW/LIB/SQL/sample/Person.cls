@@ -13,8 +13,10 @@ Property Q2 As %String;
 
 Index iName On Name;
 
+/// I realise this is silly but its just an example.
 Index iAge On Age;
 
+/// I realise this is silly but its just an example.
 Index iAgeName On (Age, Name);
 
 Storage Default
