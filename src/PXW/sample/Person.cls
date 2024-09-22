@@ -13,6 +13,10 @@ Property Q2 As %String;
 
 Index iName On Name;
 
+Index iAge On Age;
+
+Index iAgeName On (Age, Name);
+
 Storage Default
 {
 <Data name="PersonDefaultData">
