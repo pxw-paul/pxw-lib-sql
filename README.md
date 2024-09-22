@@ -3,22 +3,14 @@
  [![Reliability Rating](https://community.objectscriptquality.com/api/project_badges/measure?project=intersystems_iris_community%2Fintersystems-iris-dev-template&metric=reliability_rating)](https://community.objectscriptquality.com/dashboard?id=intersystems_iris_community%2Fintersystems-iris-dev-template)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat&logo=AdGuard)](LICENSE)
-# intersystems-iris-dev-template
-This is a basic template for a development environment to work with ObjectScript in InterSystems IRIS. It helps you edit, compile, commit/push, debug and test your ObjectScript code. It also aids in packaging your application as a module installable with IPM.
-The template is embedded python compatible.
+# pxw-lib-sql
+This is a query generator that replaces the %Library.SQLQuery, giving more options on the SQL code that is run.
 
 ## Description
-This repository provides a ready-to-go development environment for coding productively with InterSystems ObjectScript. This template:
+This project:
 * Runs InterSystems IRIS Community Edition in a docker container
 * Creates a new namespace and database IRISAPP
 * Loads the ObjectScript code into IRISAPP database using Package Manager
-* Promotes development with the 'Package First' paradigm. [Watch the video](https://www.youtube.com/watch?v=havPyPbUj1I)
-* Provides a unit testing environment: sample unit tests, tests module enablement
-* Ready for embedded python development: ENV varialbes are set up, CallIn service is On, all modules in requirements.txt will be installed during docker build.
-
-## Usage
-Start a new dev repository with InterSystems IRIS using this one as a template.
-Once you clone the new repo to your laptop and open VSCode (with the [InterSystems ObjectScript Extension Pack](https://marketplace.visualstudio.com/items?itemName=intersystems-community.objectscript-pack) installed) you'll be able to start development immediately.
 
 ## Prerequisites
 Make sure you have [git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) and [Docker desktop](https://www.docker.com/products/docker-desktop) installed.
@@ -28,7 +20,7 @@ Make sure you have [git](https://git-scm.com/book/en/v2/Getting-Started-Installi
 Clone/git pull the repo into any local directory
 
 ```
-$ git clone https://github.com/intersystems-community/intersystems-iris-dev-template.git
+$ git clone https://github.com/pxw-paul/pxw-lib-sql.git
 ```
 
 Open the terminal in this directory and call the command to build and run InterSystems IRIS in container:
@@ -48,187 +40,107 @@ $ docker-compose exec iris iris session iris -U IRISAPP
 IRISAPP>
 ```
 
-To exit the terminal, do any of the following:
-
-```
-Enter HALT or H (not case-sensitive)
-```
-
 ## What does it do
-THe sample repository contains two simplest examples of ObjectScript classes: ObjectScript method that returns value and method that creates a persistent record.
+It is often necessary to build an SQL string that is different based on the parameters passed in. 
 
-1. Open IRIS terminal and run the ObjectScript Test() method to see if runs the script and returns values from IRIS:
-
-```
-$ docker-compose exec iris iris session iris -U IRISAPP
-IRISAPP>write ##class(dc.sample.ObjectScript).Test()
-It works!
-42
-```
-
-
-
-2. Class `dc.sample.PersistentClass` contains a method `CreateRecord` that creates an object with one property, `Test`, and returns its id.
-
-Open IRIS terminal and run:
+For example, we might have a search string built that is based on Name OR Age OR Both.
 
 ```
-IRISAPP>write ##class(dc.sample.PersistentClass).CreateRecord(.id)
-1
-IRISAPP>write id
-1
+ClassMethod SimpleFilterString(SearchName As %String = "", MinAge As %Integer = "") as %String
+{
+    Set sep=""
+    Set sql="SELECT ID, Name, Age, SSN FROM %ALLINDEX PXW_LIB_SQL_sample.Person WHERE "
+    If SearchName'="" {
+        Set sql=sql_"Name %STARTSWITH '"_SearchName_"'",sep=" AND "
+    }
+    If MinAge'="" Set sql=sql_sep_"Age>="_MinAge
+    Quit sql
+}
+```
+Here the focus is on the ObjectScript and the SQL that's generated is hard to see.
+
+Using this query generator turns the above code into query where the focus is on the SQL and the logic becomes embedded as comments.
+```
+Query SimpleFilterPXW(SearchName As %String = "", MinAge As %Integer = "") As PXW.LIB.SQL.Query [ SqlProc ]
+{
+SELECT ID, Name, Age, SSN FROM %ALLINDEX PXW_LIB_SQL_sample.Person 
+WHERE 1=1
+    --IF SearchName'=""
+        AND Name %STARTSWITH :SearchName
+    --ENDIF
+    --IF MinAge'="" 
+        AND Age >= :MinAge
+    --ENDIF
+}
+```
+For me, the SQL stands out more. 
+
+The "logic" parts of the sql to use are just comments, so the editor (Studio and VS Code) will ignore them. This means that the overall SQL must be valid or the editor may get confused. 
+
+The IF,ELSEIF,ELSE,ENDIF commands must be immediately after the start of the comment.
+```
+--IF will work, -- IF will not work.
+/*IF will work, /* IF will not work.
 ```
 
-In your case the value of id could be different. And it will be different with every call of the method.
+The part after the IF is counted as object script code and simply dumped into the compiled code. This means that refering to the parameters here you do not need the colon (MinAge not :MinAge).
 
-You can check whether the record exists and try to right the property of the object by its id.
+The above example is trivial, and actually writing this as a pure SQL query you can create the same effect with the same index usage. If the logic was more complicated this starts to gain an advantage as it will only compile what is needed and is more likely to use the indices correctly.
 
+The repository contains two sample classes to demonstrate the functionality.
+
+You can populate the Person object by running
 ```
-IRISAPP>write ##class(dc.sample.PersistentClass).ReadProperty(id)
-Test string
+IRISAPP>d ##class(PXW.LIB.SQL.sample.Person).Populate(10000)
+```
+You can test its working using SQL call or ObjectScript function.
+```
+IRISAPP>:sql
+SQL Command Line Shell
+----------------------------------------------------
+
+The command prefix is currently set to: <<nothing>>.
+Enter <command>, 'q' to quit, '?' for help.
+[SQL]IRISAPP>>call PXW_LIB_SQL_sample.Queries_FilterPXW('Tesla*',110)
+
+6.      call PXW_LIB_SQL_sample.Queries_FilterPXW('Tesla*',110)
+
+Dumping result #1
+Q2      ID      Name    Age     SSN
+Y4296   4364    Tesla,Elvis O.  117     353-91-8615
+S1278   689     Tesla,Fred S.   117     824-10-3588
+E8663   8703    Tesla,Natasha E.        112     439-31-8828
+L2639   8087    Tesla,Natasha R.        110     630-26-4787
+Y2200   2470    Tesla,Patricia G.       119     678-47-4927
+C6867   5089    Tesla,Rhonda Z. 115     138-26-5910
+N9115   8009    Tesla,Umberto A.        111     988-65-2895
+
+7 Rows(s) Affected
+statement prepare time(s)/globals/cmds/disk: 0.0002s/4/101/0ms
+          execute time(s)/globals/cmds/disk: 0.0021s/75/6,498/0ms
+```
+```
+IRISAPP>s rs=##class(PXW.LIB.SQL.sample.Queries).FilterPXWFunc("Tesla*",110)
+
+IRISAPP>d rs.%Display()
+Q2      ID      Name    Age     SSN
+Y4296   4364    Tesla,Elvis O.  117     353-91-8615
+S1278   689     Tesla,Fred S.   117     824-10-3588
+E8663   8703    Tesla,Natasha E.        112     439-31-8828
+L2639   8087    Tesla,Natasha R.        110     630-26-4787
+Y2200   2470    Tesla,Patricia G.       119     678-47-4927
+C6867   5089    Tesla,Rhonda Z. 115     138-26-5910
+N9115   8009    Tesla,Umberto A.        111     988-65-2895
+
+7 Rows(s) Affected
 ```
 
-## How to start the development
-
-This repository is ready to code in VSCode with the ObjectScript plugin.
-
-Install [VSCode](https://code.visualstudio.com/), [Docker](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-docker) and the [InterSystems ObjectScript Extension Pack](https://marketplace.visualstudio.com/items?itemName=intersystems-community.objectscript-pack) plugin and open the folder in VSCode.
-
-Open the `/src/cls/PackageSample/ObjectScript.cls` class and make changes - it will be compiled in the running IRIS docker container.
-
-![docker_compose](https://user-images.githubusercontent.com/2781759/76656929-0f2e5700-6547-11ea-9cc9-486a5641c51d.gif)
-
-Feel free to delete the PackageSample folder and place your ObjectScript classes in the form
-`/src/organisation/package/Classname.cls`
-
-[Read more about folder setup for InterSystems ObjectScript](https://community.intersystems.com/post/simplified-objectscript-source-folder-structure-package-manager) and here on the [naming convention](https://community.intersystems.com/post/naming-convention-objectscript-packages-classes-and-package-manager-modules-names)
 
 ## Running unit tests
 
-The template contains two test classes: `TestObjectScript.cls` and `TestPersistentClass.cls `
-
-To run the unit tests we can use the Package Manager environment.
-
-```
-IRISAPP>zpm
-
-=============================================================================
-|| Welcome to the Package Manager Shell (ZPM).                             ||
-|| Enter q/quit to exit the shell. Enter ?/help to view available commands ||
-=============================================================================
-zpm:IRISAPP>load /home/irisowner/dev
-
-[IRISAPP|dc-sample]     Reload START (/home/irisowner/dev/)
-[IRISAPP|dc-sample]     requirements.txt START
-[IRISAPP|dc-sample]     requirements.txt SUCCESS
-[IRISAPP|dc-sample]     Reload SUCCESS
-[dc-sample]     Module object refreshed.
-[IRISAPP|dc-sample]     Validate START
-[IRISAPP|dc-sample]     Validate SUCCESS
-[IRISAPP|dc-sample]     Compile START
-[IRISAPP|dc-sample]     Compile SUCCESS
-[IRISAPP|dc-sample]     Activate START
-[IRISAPP|dc-sample]     Configure START
-[IRISAPP|dc-sample]     Configure SUCCESS
-[IRISAPP|dc-sample]     Activate SUCCESS
-zpm:IRISAPP>test dc-sample
-
-[IRISAPP|dc-sample]     Reload START (/home/irisowner/dev/)
-[IRISAPP|dc-sample]     Reload SUCCESS
-[dc-sample]     Module object refreshed.
-[IRISAPP|dc-sample]     Validate START
-[IRISAPP|dc-sample]     Validate SUCCESS
-[IRISAPP|dc-sample]     Compile START
-[IRISAPP|dc-sample]     Compile SUCCESS
-[IRISAPP|dc-sample]     Activate START
-[IRISAPP|dc-sample]     Configure START
-[IRISAPP|dc-sample]     Configure SUCCESS
-[IRISAPP|dc-sample]     Activate SUCCESS
-[IRISAPP|dc-sample]     Test STARTHello World!
-This is InterSystems IRIS with version IRIS for UNIX (Ubuntu Server LTS for ARM64 Containers) 2023.2 (Build 221U) Fri Jul 21 2023 15:12:42 EDT
-Current time is: 16 Aug 2023 14:32:10
-Use the following URL to view the result:
-http://172.31.0.2:52773/csp/sys/%25UnitTest.Portal.Indices.cls?Index=2&$NAMESPACE=IRISAPP
-All PASSED
-
-[IRISAPP|dc-sample]     Test SUCCESS
-zpm:IRISAPP>
-```
-
-In case of test errors, you can find more details back in the UnitTest portal, which can be easily opened via ObjectScript menu in VSCode:
-
-![vscvode unittest](https://user-images.githubusercontent.com/2781759/152678943-7d9d9696-e26a-449f-b1d7-f924528c8e3a.png)
-
-If you have installed the [_InterSystems Testing Manager for VS Code_ extension](https://openexchange.intersystems.com/package/InterSystems-Testing-Manager-for-VS-Code)
-you can also run unit tests directly from VSCode :
-![vscvode unittest](https://raw.githubusercontent.com/intersystems-community/intersystems-testingmanager/main/images/README/Overview-Client.gif)
+There are no unit tests yet.
 
 ## What else is inside the repository
 
-### .github folder
-
-Contains two GitHub actions workflows:
-1. `github-registry.yml`
-    Once changes pushed to the repo, the action builds the docker image on Github side and pushes the image to Github registry that can be very convenient to further cloud deployement, e.g. kubernetes.
-2. `objectscript-qaulity.yml`
-    with every push to master or main branch the workflow launches the repo test on objectscript issues with Objectscript Quality tool, [see the examples](https://community.objectscriptquality.com/projects?sort=-analysis_date). This works if the repo is open-source only.
-
-Both workflows are repo agnostic: so they work with any repository where they exist.
-
-### .vscode folder
-Contains two files to setup vscode environment:
-
-#### .vscode/settings.json
-
-Settings file to let you immediately code in VSCode with [VSCode ObjectScript plugin](https://marketplace.visualstudio.com/items?itemName=daimor.vscode-objectscript))
-
-#### .vscode/launch.json
-
-Config file if you want to debug with VSCode ObjectScript
-
-### src folder
-
-Contains source files.
-src/iris contains InterSystems IRIS Objectscript code
-
-### tests folder
-Contains unit tests for the ObjectScript classes
-
-### dev.md
-
-Contains a set of useful commands that will help during the development
-
-### docker-compose.yml
-
-A docker engine helper file to manage images building and rule ports mapping an the host to container folders(volumes) mapping
-
-### Dockerfile
-
-The simplest dockerfile which starts IRIS and imports code from /src folder into it.
-Use the related docker-compose.yml to easily setup additional parametes like port number and where you map keys and host folders.
-
-
-### iris.script
-
-Contains objectscript commands that are feeded to iris during the image building
-
-### module.xml
-
-IPM Module's description of the code in the repository.
-It describes what is loaded with the method, how it is being tested and what apps neeed to be created, what files need to be copied.
-
-[Read about all the files in this artilce](https://community.intersystems.com/post/dockerfile-and-friends-or-how-run-and-collaborate-objectscript-projects-intersystems-iris)
-
-
-
-## Troubleshooting
-
-If you have issues with docker image building here are some recipes that could help.
-
-1. You are out of free space in docker. You can expand the amount of space or clean up maually via docker desktop. Or you can call the following line to clean up:
-```
-docker system prune -f
-```
-
-2. We use multi-stage image building which in some cases doesn't work. Switch the target to [builder](https://github.com/intersystems-community/intersystems-iris-dev-template/blob/6ab6791983e5783118efce1777a7671046652e4c/docker-compose.yml#L7) from final in the docker compose and try again.
+This is based on the standard template, so contains all the github, vscode and docker settings to get going.
 
