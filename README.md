@@ -151,7 +151,7 @@ This class is used by PXW.LIB.SQL.Query when generating the code
 This is something that may help when creating queries. The macros in here were an idea I had to make a complex query.
 
 ### PXW.sample package
-The directory PXW/sample contains two txt files with the code for example classes. These are not cls files so they will not be install automatically.
+The directory PXW/sample contains two cls files with the code for example classes. 
 The two classes are: a small Person object that can be used for testing. A set of Queries showing different ways to create the same results. I hope you will agree that the PXW way looks nicer.
 
 ## Known issues
