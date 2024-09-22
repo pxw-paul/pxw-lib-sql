@@ -3,7 +3,7 @@
   <Document name="pxw-lib-sql.ZPM">
     <Module>
       <Name>pxw-lib-sql</Name>
-      <Version>1.0.0</Version>
+      <Version>2.0.14</Version>
       <Description>Basic InterSystems IRIS Development Template</Description>
       <Packaging>module</Packaging>
       <SourcesRoot>src</SourcesRoot>

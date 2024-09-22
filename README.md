@@ -75,7 +75,7 @@ WHERE 1=1
 ```
 The SQL stands out more. 
 
-The "logic" parts of the sql to use are just comments, so the editor (Studio and VS Code) will ignore them. This means that the overall SQL must be valid or the editor may get confused. 
+The "logic" parts of the sql to use are comments, so the editor (Studio and VS Code) will ignore them. The overall SQL must be valid or the editor may get confused. 
 
 The IF,ELSEIF,ELSE,ENDIF commands must be immediately after the start of the comment.
 ```
@@ -156,7 +156,7 @@ This class is used by PXW.LIB.SQL.Query when generating the code
 ### PXW.LIB.SQL.Macros.INC
 This is something that may help when creating queries. The macros in here were and idea I had to make a complex query.
 
-### PXW.LIB.SQL.sample package
+### PXW.sample package
 This contains two classes, a small Person object that can be used for testing. A set of Queries showing different ways to create the same thing. I hope you will agree that the PXW way looks nicer.
 
 ## Known issues
