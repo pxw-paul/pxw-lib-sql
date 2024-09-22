@@ -73,7 +73,7 @@ WHERE 1=1
     --ENDIF
 }
 ```
-The SQL stands out more. 
+The SQL becomes the focus. 
 
 The "logic" parts of the sql to use are comments, so the editor (Studio and VS Code) will ignore them. The overall SQL must be valid or the editor may get confused. 
 
