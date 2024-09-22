@@ -4,7 +4,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat&logo=AdGuard)](LICENSE)
 # pxw-lib-sql
-This is a query generator that replaces the %Library.SQLQuery, giving more options on the SQL code that is run.
+This is a query generator that replaces the %Library.SQLQuery, giving more control over the SQL code that is run.
 
 ## Description
 This project:
@@ -40,7 +40,7 @@ $ docker-compose exec iris iris session iris -U IRISAPP
 IRISAPP>
 ```
 
-## What does it do
+## What does it do?
 It is often necessary to build an SQL string that is different based on the parameters passed in. 
 
 For example, we might have a search string built that is based on Name OR Age OR Both.
@@ -59,7 +59,7 @@ ClassMethod SimpleFilterString(SearchName As %String = "", MinAge As %Integer = 
 ```
 Here the focus is on the ObjectScript and the SQL that's generated is hard to see.
 
-Using this query generator turns the above code into query where the focus is on the SQL and the logic becomes embedded as comments.
+Using this query generator, the above code could be written as a query where the focus is on the SQL and the extra logic becomes embedded as comments.
 ```
 Query SimpleFilterPXW(SearchName As %String = "", MinAge As %Integer = "") As PXW.LIB.SQL.Query [ SqlProc ]
 {
@@ -144,3 +144,56 @@ There are no unit tests yet.
 
 This is based on the standard template, so contains all the github, vscode and docker settings to get going.
 
+The classes needed to use the new query template are:
+### PXW.LIB.SQL.Query
+This is that class that replaces %Library.SQLQuery on Queries.
+
+### PXW.LIB.SQL.Generator
+This class is used by PXW.LIB.SQL.Query when generating the code
+
+### PXW.LIB.SQL.Macros.INC
+This is something that may help when creating queries. The macros in here were and idea I had to make a complex Query - I might decide to drop this.
+
+### PXW.LIB.SQL.sample package
+This contains two classes, a small Person object that can be used for testing. A set of Queries showing different ways to create the same thing. Hopefully you will agree that the PXW way looks nicer.
+
+## Known issues
+There is no check on the query to make sure the IF/ENDIF counts match. If there is something wrong it will most likely show a compile error on a seemingly random line of the INT code.
+
+The original code for this was developed a few years ago on an older version of Cache, and extended the %Library.SQLQuery class. When upgrading to Iris the %SQLQuery class changed and no longer worked with this extension. To resolve this the old Cache code was copied in to the PXW version. This may not be the best solution and perhaps it should be reworked to extend from the new %SQLQuery.
+
+## Example query timings
+I have run a number of tests to see if there is an improvement comparing a pure SQL version of the filtering with the PXW version. I think the SQL version is a fair test. It might be that the optimiser has some features that I am unaware of and that the complex search criteria could be handled better.
+
+Here are the results of the test runs.
+```
+call PXW_LIB_SQL_sample.Queries_FilterSQL('Tesla*',42)
+-- Row count: 39 Performance: 0.0169 seconds  18124 global references 98862 commands executed 0 disk read latency (ms)
+
+call PXW_LIB_SQL_sample.Queries_FilterPXW('Tesla*',42)
+-- Row count: 39 Performance: 0.0066 seconds  751 global references 12259 commands executed 0 disk read latency (ms) 
+
+
+call PXW_LIB_SQL_sample.Queries_FilterSQL('Tesla,Alice G.',NULL)
+--Row count: 1 Performance: 0.0034 seconds  324 global references 1559 commands executed 0 disk read latency (ms) 
+
+call PXW_LIB_SQL_sample.Queries_FilterPXW('Tesla,Alice G.',NULL)
+--Row count: 1 Performance: 0.0028 seconds  331 global references 4461 commands executed 0 disk read latency (ms) 
+
+
+call PXW_LIB_SQL_sample.Queries_FilterSQL('Tesla,Alice G.',42)
+--Row count: 1 Performance: 0.0100 seconds  18010 global references 93922 commands executed 0 disk read latency (ms)
+
+call PXW_LIB_SQL_sample.Queries_FilterPXW('Tesla,Alice G.',42)
+--Row count: 1 Performance: 0.0035 seconds  489 global references 5589 commands executed 0 disk read latency (ms) 
+
+
+call PXW_LIB_SQL_sample.Queries_FilterSQL('Tesla*',NULL,'AGE')
+--Row count: 55 Performance: 0.0079 seconds  544 global references 8917 commands executed 0 disk read latency (ms) 
+
+call PXW_LIB_SQL_sample.Queries_FilterPXW('Tesla*',NULL,'AGE')
+--Row count: 55 Performance: 0.0079 seconds  551 global references 13130 commands executed 0 disk read latency (ms)
+```
+Each test was run several times to elimiate caching and query creation overheads.
+
+In some cases the PXW version is significantly faster. 
