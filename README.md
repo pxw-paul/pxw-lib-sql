@@ -160,7 +160,10 @@ This is something that may help when creating queries. The macros in here were a
 
 ### PXW.sample package
 The directory PXW/sample contains two cls files with the code for example classes. 
-The two classes are: a small Person object that can be used for testing. A set of Queries showing different ways to create the same results. I hope you will agree that the PXW way looks nicer.
+
+The two classes are: a small Person object that can be used for testing. A set of Queries showing different ways to create the same results. 
+
+I hope you will agree that the PXW way looks nicer.
 
 ## Known issues
 There is no check on the query to make sure the IF/ENDIF counts match. If there is something wrong it will most likely show a compile error on a seemingly random line of the INT code.
