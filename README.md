@@ -4,7 +4,15 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat&logo=AdGuard)](LICENSE)
 # pxw-lib-sql
-This is a query generator that replaces the %Library.SQLQuery, giving more control over the SQL code that is run.
+This is a query generator that replaces the %Library.SQLQuery, giving more control over SQL code.
+
+To enable, change:
+
+Query filter(Name As %String = "", Age As %Integer = "") As %SQLQuery
+
+to
+
+Query filter(Name As %String = "", Age As %Integer = "") As PXW.LIB.SQL.Query
 
 ## Description
 This project:
