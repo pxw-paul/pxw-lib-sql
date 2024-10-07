@@ -90,12 +90,8 @@ The part after the IF is counted as object script code and simply dumped into th
 
 The above example is trivial, and actually writing this as a pure SQL query you can create the same effect with the same index usage. If the logic was more complicated this starts to gain an advantage as it will only compile what is needed and is more likely to use the indices correctly - although query optimisation that happens in Iris is very good and produces some really neat plans.
 
-The repository contains two sample classes to demonstrate the functionality, these are text files so are not loaded automatically. You can load them if you want to try the tests.
+The repository contains two sample classes to demonstrate the functionality. The table is populated with 10000 rows of random data automatically.
 
-You can populate the Person object by running
-```
-IRISAPP>d ##class(PXW.sample.Person).Populate(10000)
-```
 You can test its working using SQL call or ObjectScript function.
 ```
 IRISAPP>:sql
@@ -117,7 +113,6 @@ A5668   9747    Tesla,Norbert A.        96      440-75-2962
 L1050   6520    Tesla,Patricia S.       98      141-80-1777
 
 6 Rows(s) Affected
----------------------------------------------------------------------------
 ```
 ```
 IRISAPP>s rs=##class(PXW.sample.PersonQueries).FilterPXWFunc("Tesla*",95)
