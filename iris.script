@@ -23,5 +23,9 @@
     // Configure %UnitTest in IRISAPP to suit the VS Code extension
     set ^UnitTestRoot="/usr/irissys/.vscode/IRISAPP/UnitTestRoot"
 
-    zpm "load /home/irisowner/dev/ -v":1:1
+    zpm "load /home/irisowner/dev/ -v"
+
+    do $System.OBJ.ImportDir("/home/irisowner/dev/src/PXW/sample","*.cls","ck",,1)
+    do ##class(PXW.sample.Person).Populate(10000)
+
     halt

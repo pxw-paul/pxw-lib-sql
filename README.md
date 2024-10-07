@@ -1,13 +1,15 @@
 # pxw-lib-sql
 This is a query generator that replaces the %Library.SQLQuery, giving more control over SQL code.
 
-To enable, change:
+To enable, change your query:
 
 Query filter(Name As %String = "", Age As %Integer = "") As %SQLQuery
 
 to
 
 Query filter(Name As %String = "", Age As %Integer = "") As PXW.LIB.SQL.Query
+
+This will enable ObjectScript conditions to be embedded in SQL code.
 
 ## Description
 This project:
@@ -29,9 +31,6 @@ $ git clone https://github.com/pxw-paul/pxw-lib-sql.git
 Open the terminal in this directory and call the command to build and run InterSystems IRIS in container:
 *Note: Users running containers on a Linux CLI, should use "docker compose" instead of "docker-compose"*
 *See [Install the Compose plugin](https://docs.docker.com/compose/install/linux/)*
-
-
-
 ```
 $ docker-compose up -d
 ```
@@ -75,10 +74,9 @@ WHERE 1=1
         AND Age >= :MinAge
     --ENDIF
 }
-```
-The SQL becomes the focus. 
+``` 
 
-The "logic" parts of the sql to use are comments, so the editor (Studio and VS Code) will ignore them. The overall SQL must be valid or the editor may get confused. 
+The "logic" parts, controlling the final, sql are comments, so the editor (Studio and VS Code) will ignore them. The overall SQL must be valid or the editor may get confused. 
 
 The IF,ELSEIF,ELSE,ENDIF commands must be immediately after the start of the comment.
 ```
@@ -88,14 +86,10 @@ The IF,ELSEIF,ELSE,ENDIF commands must be immediately after the start of the com
 
 The part after the IF is counted as object script code and simply dumped into the compiled code. This means that refering to the parameters here you do not need the colon (MinAge not :MinAge).
 
-The above example is trivial, and actually writing this as a pure SQL query you can create the same effect with the same index usage. If the logic was more complicated this starts to gain an advantage as it will only compile what is needed and is more likely to use the indices correctly - although query optimisation that happens in Iris is very good and produces some really neat plans.
+The above example is trivial, and actually writing this as a pure SQL query you can create the same effect with the same index usage. If the logic was more complicated this starts to gain an advantage as it will only compile what is needed and is more likely to use the indices correctly.
 
-The repository contains two sample classes to demonstrate the functionality, these are text files so are not loaded automatically. You can load them if you want to try the tests.
+The repository contains two sample classes to demonstrate the functionality. The table is populated with 10000 rows of random data automatically.
 
-You can populate the Person object by running
-```
-IRISAPP>d ##class(PXW.sample.Person).Populate(10000)
-```
 You can test its working using SQL call or ObjectScript function.
 ```
 IRISAPP>:sql
@@ -104,40 +98,36 @@ SQL Command Line Shell
 
 The command prefix is currently set to: <<nothing>>.
 Enter <command>, 'q' to quit, '?' for help.
-[SQL]IRISAPP>>call PXW_sample.PersonQueries_FilterPXW('Tesla*',95)
-10.     call PXW_sample.PersonQueries_FilterPXW('Tesla*',95)
+[SQL]IRISAPP>>call PXW_sample.PersonQueries_SimpleFilterPXW('Tesla',94)
+9.      call PXW_sample.PersonQueries_SimpleFilterPXW('Tesla',94)
 
 Dumping result #1
-Q2      ID      Name    Age     SSN
-G2310   687     Tesla,Elvis A.  96      762-84-8864
-Y9218   214     Tesla,Emily C.  99      674-43-9686
-R6725   7356    Tesla,Jose S.   95      356-42-2497
-B7247   7000    Tesla,Norbert A.        99      420-73-2273
-A5668   9747    Tesla,Norbert A.        96      440-75-2962
-L1050   6520    Tesla,Patricia S.       98      141-80-1777
+ID      Name    Age     SSN
+6388    Tesla,Sally B.  98      838-48-5845
+7812    Tesla,James F.  99      875-64-7340
+9273    Tesla,David K.  94      489-97-1975
+9315    Tesla,Dan F.    94      948-94-6350
+9871    Tesla,Ashley H. 98      535-23-7307
 
-6 Rows(s) Affected
----------------------------------------------------------------------------
+5 Rows(s) Affected
 ```
 ```
-IRISAPP>s rs=##class(PXW.sample.PersonQueries).FilterPXWFunc("Tesla*",95)
-
+IRISAPP>s rs=##class(PXW.sample.PersonQueries).SimpleFilterPXWFunc("Tesla",94)
 IRISAPP>d rs.%Display()
-Q2      ID      Name    Age     SSN
-G2310   687     Tesla,Elvis A.  96      762-84-8864
-Y9218   214     Tesla,Emily C.  99      674-43-9686
-R6725   7356    Tesla,Jose S.   95      356-42-2497
-B7247   7000    Tesla,Norbert A.        99      420-73-2273
-A5668   9747    Tesla,Norbert A.        96      440-75-2962
-L1050   6520    Tesla,Patricia S.       98      141-80-1777
+ID      Name    Age     SSN
+6388    Tesla,Sally B.  98      838-48-5845
+7812    Tesla,James F.  99      875-64-7340
+9273    Tesla,David K.  94      489-97-1975
+9315    Tesla,Dan F.    94      948-94-6350
+9871    Tesla,Ashley H. 98      535-23-7307
 
-6 Rows(s) Affected
+5 Rows(s) Affected
 ```
+The PersonQueries class also contains a more complex example, using nested IFs, that you can look at and play with.
 
 ## Running unit tests
 
 There are no unit tests yet.
-
 
 ## What else is inside the repository
 
