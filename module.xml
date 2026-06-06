@@ -3,8 +3,8 @@
   <Document name="pxw-lib-sql.ZPM">
     <Module>
       <Name>pxw-lib-sql</Name>
-      <Version>1.0.1</Version>
-      <Description>Basic InterSystems IRIS Development Template</Description>
+      <Version>1.0.2</Version>
+      <Description>PXW dynamic sql query</Description>
       <Packaging>module</Packaging>
       <SourcesRoot>src</SourcesRoot>
       <Resource Name="PXW.LIB.SQL.PKG"/>

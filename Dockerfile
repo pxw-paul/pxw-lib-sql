@@ -1,9 +1,5 @@
-ARG IMAGE=intersystemsdc/irishealth-community:2020.3.0.200.0-zpm
-ARG IMAGE=intersystemsdc/iris-community:2020.4.0.547.0-zpm
-ARG IMAGE=containers.intersystems.com/intersystems/iris:2021.1.0.215.0
 ARG IMAGE=intersystemsdc/irishealth-community
 ARG IMAGE=intersystemsdc/iris-community
-ARG IMAGE=intersystemsdc/iris-community:preview
 FROM $IMAGE AS builder
 
 WORKDIR /home/irisowner/dev
@@ -27,13 +23,11 @@ ENV PATH "/usr/irissys/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sb
 COPY .iris_init /home/irisowner/.iris_init
 
 RUN --mount=type=bind,src=.,dst=. \
-    pip3 install -r requirements.txt && \
     iris start IRIS && \
 	iris session IRIS < iris.script && \
     iris stop IRIS quietly
 
 #RUN --mount=type=bind,src=.,dst=. \
-#    pip3 install -r requirements.txt && \
 #    iris start IRIS && \
 #	iris session IRIS < iris.script && \
 #    ([ "$TESTS" -eq 0 ] || iris session iris -U "$NAMESPACE" "##class(%ZPM.PackageManager).Shell(\"test $MODULE -v -only\",1,1)") && \
